@@ -34,7 +34,7 @@ Or add to your `pubspec.yaml` for project-specific usage:
 
 ```yaml
 dev_dependencies:
-  asset_opt: ^0.1.0
+  asset_opt: ^1.0.1
 ```
 
 ## Usage 💻
@@ -168,12 +168,12 @@ Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTIN
 
 ## Roadmap 🗺️
 
-### Version 0.2.0
+### Version 1.2.0
 - [ ] Configuration file support
 - [ ] Custom optimization presets
 - [ ] Watch mode for development
 
-### Version 0.3.0
+### Version 1.3.0
 - [ ] WebP conversion
 - [ ] SVG optimization
 - [ ] Asset usage analysis
