@@ -22,33 +22,47 @@ class AnalyzeCommand {
       _state.startAnalysis();
 
       // Find asset directories
+      _state.setTask('Reading project configuration...');
       final assetPaths = await _fileService.findAssetPaths(projectPath);
       if (assetPaths.isEmpty) {
         throw AssetOptException('No asset directories found in pubspec.yaml');
       }
 
       // Scan for assets
+      _state.setTask('Scanning asset directories...');
       final scanResult = await _fileService.scanAssets(assetPaths);
+      final totalFiles = scanResult.assets.length;
 
       // Get detailed image info for each asset
-      final assetDetails = await Future.wait(
-        scanResult.assets.map((asset) async {
-          final file = File(asset.path);
-          final imageInfo = await _imageService.getImageInfo(file);
+      _state.setTask('Analyzing assets...');
+      final assetDetails = <AssetDetail>[];
+      var processed = 0;
 
-          return AssetDetail(
-            info: asset,
-            imageInfo: imageInfo,
-            issues: _analyzeAssetIssues(asset, imageInfo),
-          );
-        }),
-      );
+      for (final asset in scanResult.assets) {
+        final file = File(asset.path);
+        final imageInfo = await _imageService.getImageInfo(file);
 
+        assetDetails.add(AssetDetail(
+          info: asset,
+          imageInfo: imageInfo,
+          issues: _analyzeAssetIssues(asset, imageInfo),
+        ));
+
+        processed++;
+        _state.updateProgress(
+          'Analyzing ${path.basename(asset.path)}',
+          processed,
+          totalFiles,
+        );
+      }
+
+      _state.setTask('Finalizing analysis...');
       final result = AnalysisResult(
-          assets: assetDetails,
-          scanErrors: scanResult.errors,
-          analyzedAt: DateTime.now(),
-          projectRoot: projectPath);
+        assets: assetDetails,
+        scanErrors: scanResult.errors,
+        analyzedAt: DateTime.now(),
+        projectRoot: projectPath,
+      );
 
       _state.completeAnalysis(result);
       return result;

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:asset_opt/asset_opt.dart';
+import 'package:asset_opt/view/analysis_progress_listener.dart';
+import 'package:asset_opt/view/progress_view.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
@@ -74,8 +76,13 @@ void main(List<String> arguments) async {
       optimizationState.addListener(ProgressReporter(optimizationState));
     }
 
+    final progressView = ProgressView();
+    analysisState
+        .addListener(AnalysisProgressListener(analysisState, progressView));
+
     // Run analysis
     final analysis = await analyzeCommand.execute(parsedArgs['path']);
+    stdout.write('\n'); // Clear progress line
     print(analysisView.formatAnalysisResult(analysis));
 
     // Save analysis report
