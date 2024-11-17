@@ -1,7 +1,10 @@
 name: asset_opt
-description: A sample command-line application.
+description: A Flutter/Dart tool for analyzing and optimizing project assets. Provides detailed analysis, recommendations, and automatic optimizations for images.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+homepage: https://github.com/aikins01/asset_opt
+repository: https://github.com/aikins01/asset_opt
+documentation: https://github.com/aikins01/asset_opt/docs
+issue_tracker: https://github.com/aikins01/asset_opt/issues
 
 environment:
   sdk: ^3.5.3
@@ -17,3 +20,13 @@ dependencies:
 dev_dependencies:
   lints: ^4.0.0
   test: ^1.24.0
+
+executables:
+  asset_opt: asset_opt
+
+topics:
+  - cli
+  - assets
+  - optimization
+  - flutter
+  - images
