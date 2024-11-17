@@ -3,6 +3,7 @@ import 'package:asset_opt/model/image_info.dart';
 import 'package:asset_opt/model/optimization_config.dart';
 import 'package:asset_opt/utils/exceptions.dart';
 import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as path;
 
 class ImageService {
   Future<ImageInfo?> getImageInfo(File file) async {
@@ -36,7 +37,6 @@ class ImageService {
       final optimizedPath = '${image.path}.optimized';
       List<int> optimizedBytes;
 
-      // Apply optimizations based on image type
       final extension = path.extension(image.path).toLowerCase();
       switch (extension) {
         case '.jpg':
@@ -49,7 +49,9 @@ class ImageService {
           break;
 
         case '.webp':
-          optimizedBytes = _optimizeWebp(originalImage, config);
+          // Use PNG encoding for WebP files since image package
+          // doesn't support WebP encoding directly
+          optimizedBytes = _optimizePng(originalImage, config);
           break;
 
         default:
@@ -65,7 +67,6 @@ class ImageService {
   }
 
   List<int> _optimizeJpeg(img.Image image, OptimizationConfig config) {
-    // Apply JPEG-specific optimizations
     if (config.resize != null) {
       image = img.copyResize(
         image,
@@ -82,7 +83,6 @@ class ImageService {
   }
 
   List<int> _optimizePng(img.Image image, OptimizationConfig config) {
-    // Apply PNG-specific optimizations
     if (config.resize != null) {
       image = img.copyResize(
         image,
@@ -95,23 +95,6 @@ class ImageService {
     return img.encodePng(
       image,
       level: 9, // Maximum compression
-    );
-  }
-
-  List<int> _optimizeWebp(img.Image image, OptimizationConfig config) {
-    // Apply WebP-specific optimizations
-    if (config.resize != null) {
-      image = img.copyResize(
-        image,
-        width: config.resize!.width,
-        height: config.resize!.height,
-        interpolation: img.Interpolation.linear,
-      );
-    }
-
-    return img.encodeWebp(
-      image,
-      quality: config.webpQuality,
     );
   }
 }
