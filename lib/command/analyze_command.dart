@@ -61,13 +61,11 @@ class AnalyzeCommand {
   List<AssetIssue> _analyzeAssetIssues(AssetInfo asset, ImageInfo? imageInfo) {
     final issues = <AssetIssue>[];
 
-    // Check file size
+    // Check file size (1MB limit)
     if (asset.size > 1024 * 1024) {
-      // 1MB
       issues.add(AssetIssue(
         type: IssueType.largeFile,
-        message: 'File size exceeds 1MB',
-        severity: IssueSeverity.warning,
+        details: '${_formatSize(asset.size)} exceeds 1MB limit',
       ));
     }
 
@@ -76,20 +74,28 @@ class AnalyzeCommand {
       if (imageInfo.width > 2000 || imageInfo.height > 2000) {
         issues.add(AssetIssue(
           type: IssueType.largeDimensions,
-          message: 'Image dimensions exceed 2000px',
-          severity: IssueSeverity.warning,
+          details:
+              '${imageInfo.width}x${imageInfo.height} exceeds 2000px limit',
         ));
       }
 
+      // Check for inefficient format usage
       if (asset.type == 'png' && !imageInfo.hasAlpha) {
         issues.add(AssetIssue(
           type: IssueType.inefficientFormat,
-          message: 'PNG without alpha channel could be JPEG',
-          severity: IssueSeverity.suggestion,
+          details: 'PNG without transparency could be JPEG',
         ));
       }
     }
 
     return issues;
+  }
+
+  String _formatSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    }
+    return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
   }
 }
