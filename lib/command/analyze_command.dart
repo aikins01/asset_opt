@@ -9,6 +9,7 @@ import 'package:asset_opt/service/file_service.dart';
 import 'package:asset_opt/service/image_service.dart';
 import 'package:asset_opt/state/analysis_state.dart';
 import 'package:asset_opt/utils/exceptions.dart';
+import 'package:path/path.dart' as path_util;
 
 class AnalyzeCommand {
   final FileService _fileService;
@@ -50,7 +51,7 @@ class AnalyzeCommand {
 
         processed++;
         _state.updateProgress(
-          'Analyzing ${path.basename(asset.path)}',
+          'Analyzing ${path_util.basename(asset.path)}',
           processed,
           totalFiles,
         );
