@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1
+## 1.0.2
 
 Initial release with the following features:
 

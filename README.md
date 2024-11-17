@@ -34,7 +34,7 @@ Or add to your `pubspec.yaml` for project-specific usage:
 
 ```yaml
 dev_dependencies:
-  asset_opt: ^1.0.1
+  asset_opt: ^1.0.2
 ```
 
 ## Usage 💻
