@@ -2,7 +2,7 @@
 
 A powerful Flutter/Dart tool for analyzing and optimizing project assets. Get detailed insights into your asset usage and automatically optimize images to improve your app's performance.
 
-![Repo Card](.github/assets/asset_opt_repocard.png)
+![Repo Card](https://github.com/aikins01/asset_opt/blob/cb72281e3a97bc72c3199a12b0fd7a5dcb47d43c/.github/assets/asset_opt_repocard.png)
 
 ## Features 🚀
 
