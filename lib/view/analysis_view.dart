@@ -67,16 +67,40 @@ class AnalysisView {
         typeStats.map((e) => e.value).reduce((a, b) => a > b ? a : b);
     final totalSize = result.getTotalSize();
 
+    // Column headers
+    buffer.writeln('${'Type'.padRight(8)} '
+        '${'Size'.padRight(10)} '
+        '${'Files'.padRight(7)} '
+        'Distribution');
+    buffer.writeln(Color.dim('─' * _terminalWidth));
+
     for (final entry in typeStats) {
       final percentage = (entry.value / totalSize * 100).toStringAsFixed(1);
       final count = result.getCountByType()[entry.key] ?? 0;
-      final barLength = (entry.value / maxSize * _barWidth).round();
+      final barLength = (entry.value / maxSize * 30).round();
 
-      buffer.writeln('${_formatFileType(entry.key).padRight(5)} │ '
-          '${_createGradientBar(barLength)} '
-          '${Color.dim(_formatSize(entry.value).padRight(10))} '
-          '${Color.yellow('$percentage%'.padLeft(7))} '
-          '${Color.dim('($count files)')}');
+      // Color based on file type
+      final typeColor = _getTypeColor(entry.key);
+      final barColor = _getBarColor(entry.key);
+
+      // Type column
+      final typeStr = typeColor(entry.key.toUpperCase().padRight(8));
+
+      // Size column with color based on size percentage
+      final sizeColor = _getSizeColor(entry.value / totalSize * 100);
+      final sizeStr = sizeColor(_formatSize(entry.value).padRight(10));
+
+      // File count
+      final countStr = Color.dim(count.toString().padRight(7));
+
+      // Progress bar using blocks
+      final bar =
+          '${'│' + barColor('█' * barLength)}${Color.dim(' ' * (30 - barLength))}│';
+
+      buffer.writeln('$typeStr '
+          '$sizeStr '
+          '$countStr '
+          '$bar ${Color.yellow('${percentage.padLeft(5)}%')}');
     }
   }
 
@@ -196,30 +220,6 @@ class AnalysisView {
         return _getCompressionRecommendation(asset);
       default:
         return issue.message;
-    }
-  }
-
-  String _createGradientBar(int length) {
-    if (length == 0) return ' ' * _barWidth;
-
-    final fullBlocks = '█' * length;
-    final emptyBlocks = ' ' * (_barWidth - length);
-    return Color.gradient(fullBlocks) + Color.dim(emptyBlocks);
-  }
-
-  String _formatFileType(String type) {
-    switch (type.toLowerCase()) {
-      case 'png':
-        return Color.green('PNG');
-      case 'jpg':
-      case 'jpeg':
-        return Color.yellow('JPG');
-      case 'webp':
-        return Color.blue('WEBP');
-      case 'svg':
-        return Color.magenta('SVG');
-      default:
-        return Color.white(type.toUpperCase());
     }
   }
 
@@ -378,4 +378,52 @@ String _getFormatConversionSteps(AssetDetail asset) {
     return 'Convert to JPEG using: cwebp -q 85 ${asset.info.name}';
   }
   return 'Convert to WebP using: cwebp -q 85 ${asset.info.name}';
+}
+
+Function _getTypeColor(String type) {
+  switch (type.toLowerCase()) {
+    case 'png':
+      return Color.brightBlue; // PNG - Often used for transparency
+    case 'jpg':
+    case 'jpeg':
+      return Color.brightGreen; // JPEG - Standard photos
+    case 'webp':
+      return Color.brightCyan; // WebP - Modern format
+    case 'svg':
+      return Color.brightMagenta; // SVG - Vector graphics
+    case 'gif':
+      return Color.brightYellow; // GIF - Animations
+    default:
+      return Color.white;
+  }
+}
+
+Function _getBarColor(String type) {
+  switch (type.toLowerCase()) {
+    case 'png':
+      return Color.blue;
+    case 'jpg':
+    case 'jpeg':
+      return Color.green;
+    case 'webp':
+      return Color.cyan;
+    case 'svg':
+      return Color.magenta;
+    case 'gif':
+      return Color.yellow;
+    default:
+      return Color.dim;
+  }
+}
+
+Function _getSizeColor(double percentage) {
+  if (percentage > 50) {
+    return Color.brightRed; // Very large portion
+  } else if (percentage > 25) {
+    return Color.brightYellow; // Significant portion
+  } else if (percentage > 10) {
+    return Color.brightGreen; // Moderate portion
+  } else {
+    return Color.dim; // Small portion
+  }
 }
