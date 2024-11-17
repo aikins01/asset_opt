@@ -1,0 +1,636 @@
+{
+  "timestamp": "2024-11-17T06:35:47.694676",
+  "totalAssets": 50,
+  "totalSize": 1593636,
+  "sizeByType": {
+    "png": 975099,
+    "svg": 68378,
+    "jpeg": 550159
+  },
+  "assets": [
+    {
+      "name": "logo-black.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/logo-black.png",
+      "size": 3827,
+      "type": "png",
+      "lastModified": "2024-07-20T01:33:02.055",
+      "imageInfo": {
+        "width": 177,
+        "height": 96,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "logo-coloured.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/logo-coloured.svg",
+      "size": 21656,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.363",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "logo-coloured.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/logo-coloured.png",
+      "size": 4430,
+      "type": "png",
+      "lastModified": "2024-07-19T17:59:50.904",
+      "imageInfo": {
+        "width": 177,
+        "height": 96,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "c-4.jpg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/c-4.jpg",
+      "size": 88069,
+      "type": "jpeg",
+      "lastModified": "2024-07-10T16:49:54.360",
+      "imageInfo": {
+        "width": 720,
+        "height": 756,
+        "format": "uint8",
+        "hasAlpha": false,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "c-1.jpg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/c-1.jpg",
+      "size": 100544,
+      "type": "jpeg",
+      "lastModified": "2024-07-10T16:49:54.354",
+      "imageInfo": {
+        "width": 720,
+        "height": 756,
+        "format": "uint8",
+        "hasAlpha": false,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "c-3.jpg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/c-3.jpg",
+      "size": 129203,
+      "type": "jpeg",
+      "lastModified": "2024-07-10T16:49:54.358",
+      "imageInfo": {
+        "width": 720,
+        "height": 756,
+        "format": "uint8",
+        "hasAlpha": false,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "c-2.jpg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/c-2.jpg",
+      "size": 82471,
+      "type": "jpeg",
+      "lastModified": "2024-07-10T16:49:54.355",
+      "imageInfo": {
+        "width": 720,
+        "height": 756,
+        "format": "uint8",
+        "hasAlpha": false,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "logo.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/logo.png",
+      "size": 9029,
+      "type": "png",
+      "lastModified": "2024-07-29T18:44:09.513",
+      "imageInfo": {
+        "width": 401,
+        "height": 401,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "logo-monotone.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/logo-monotone.svg",
+      "size": 21601,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.364",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "empty_orders.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/empty_orders.png",
+      "size": 40114,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.361",
+      "imageInfo": {
+        "width": 229,
+        "height": 198,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "splash-bg.jpeg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/images/splash-bg.jpeg",
+      "size": 149872,
+      "type": "jpeg",
+      "lastModified": "2024-07-11T13:20:52.840",
+      "imageInfo": {
+        "width": 1327,
+        "height": 1288,
+        "format": "uint8",
+        "hasAlpha": false,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "search.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/search.svg",
+      "size": 444,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.337",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "home-filled.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/home-filled.png",
+      "size": 65867,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.322",
+      "imageInfo": {
+        "width": 363,
+        "height": 362,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "user.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/user.svg",
+      "size": 585,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.345",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "book.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/book.png",
+      "size": 6792,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.310",
+      "imageInfo": {
+        "width": 170,
+        "height": 170,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "profile-filled.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/profile-filled.png",
+      "size": 76699,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.332",
+      "imageInfo": {
+        "width": 362,
+        "height": 362,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "lock.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/lock.svg",
+      "size": 880,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.325",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "mail.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/mail.svg",
+      "size": 870,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.325",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "rates.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/rates.png",
+      "size": 61104,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.335",
+      "imageInfo": {
+        "width": 512,
+        "height": 513,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "home.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/home.png",
+      "size": 74179,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.324",
+      "imageInfo": {
+        "width": 363,
+        "height": 362,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "order-list.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/order-list.png",
+      "size": 13429,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.329",
+      "imageInfo": {
+        "width": 170,
+        "height": 170,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "wallet.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/wallet.svg",
+      "size": 1230,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.346",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "account.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/account.png",
+      "size": 4701,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.309",
+      "imageInfo": {
+        "width": 100,
+        "height": 100,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "track.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/track.png",
+      "size": 57569,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.344",
+      "imageInfo": {
+        "width": 478,
+        "height": 477,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "ghana.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/ghana.svg",
+      "size": 795,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.318",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "tutorial.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/tutorial.png",
+      "size": 21559,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.345",
+      "imageInfo": {
+        "width": 512,
+        "height": 515,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "contact-us.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/contact-us.png",
+      "size": 13329,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.314",
+      "imageInfo": {
+        "width": 170,
+        "height": 170,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "track-filled.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/track-filled.png",
+      "size": 40865,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.341",
+      "imageInfo": {
+        "width": 478,
+        "height": 477,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "marker.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/marker.svg",
+      "size": 636,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.326",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "scan.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/scan.svg",
+      "size": 935,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.336",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "box.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/box.svg",
+      "size": 937,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.311",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "chev-right.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/chev-right.svg",
+      "size": 838,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.313",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "facebook.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/facebook.svg",
+      "size": 1042,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.317",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "google.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/google.svg",
+      "size": 1395,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.320",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "notification-filled.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/notification-filled.png",
+      "size": 14154,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.327",
+      "imageInfo": {
+        "width": 154,
+        "height": 161,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "gift.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/gift.png",
+      "size": 45058,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.319",
+      "imageInfo": {
+        "width": 512,
+        "height": 512,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "edit.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/edit.svg",
+      "size": 903,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.315",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "profile.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/profile.png",
+      "size": 93627,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.334",
+      "imageInfo": {
+        "width": 362,
+        "height": 362,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "exit.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/exit.png",
+      "size": 14671,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.316",
+      "imageInfo": {
+        "width": 170,
+        "height": 170,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "send-filled.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/send-filled.png",
+      "size": 75855,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.338",
+      "imageInfo": {
+        "width": 416,
+        "height": 335,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "zippy-balance.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/zippy-balance.png",
+      "size": 60989,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.347",
+      "imageInfo": {
+        "width": 1187,
+        "height": 1938,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "phone.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/phone.svg",
+      "size": 861,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.331",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "success.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/success.svg",
+      "size": 1123,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.340",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "track-outline.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/track-outline.svg",
+      "size": 6794,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.342",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "calendar.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/calendar.svg",
+      "size": 1513,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.312",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "notification.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/notification.png",
+      "size": 17675,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.328",
+      "imageInfo": {
+        "width": 154,
+        "height": 161,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "send.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/send.png",
+      "size": 82230,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.340",
+      "imageInfo": {
+        "width": 416,
+        "height": 335,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    },
+    {
+      "name": "chev-down.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/chev-down.svg",
+      "size": 840,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.312",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "apple.svg",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/apple.svg",
+      "size": 2500,
+      "type": "svg",
+      "lastModified": "2024-07-10T16:49:54.310",
+      "imageInfo": null,
+      "issues": []
+    },
+    {
+      "name": "people.png",
+      "path": "/Users/aikins01/Developer/zippy_partner/assets/icons/people.png",
+      "size": 77347,
+      "type": "png",
+      "lastModified": "2024-07-10T16:49:54.330",
+      "imageInfo": {
+        "width": 512,
+        "height": 341,
+        "format": "uint8",
+        "hasAlpha": true,
+        "metadata": null
+      },
+      "issues": []
+    }
+  ]
+}
