@@ -5,11 +5,13 @@ class AnalysisResult {
   final List<AssetDetail> assets;
   final Map<String, String> scanErrors;
   final DateTime analyzedAt;
+  final String projectRoot;
 
   AnalysisResult({
     required this.assets,
     required this.scanErrors,
     required this.analyzedAt,
+    required this.projectRoot,
   });
 
   int getTotalSize() => assets.fold(0, (sum, asset) => sum + asset.info.size);

@@ -1,4 +1,5 @@
 import 'package:asset_opt/model/analysis_result.dart';
+import 'package:asset_opt/model/asset_detail.dart';
 import 'package:asset_opt/model/asset_issue.dart';
 import 'package:asset_opt/view/terminal_colors.dart';
 
@@ -86,14 +87,50 @@ class AnalysisView {
     buffer.writeln(Color.bold('\n📁 Directory Structure'));
     buffer.writeln(Color.dim('─' * _terminalWidth));
 
-    for (final entry in dirStats.entries) {
-      final size = entry.value.totalSize;
-      final count = entry.value.fileCount;
-      final depth = entry.key.split('/').length - 1;
-      final indent = '  ' * depth;
+    // Show project root path
+    buffer.writeln(Color.dim('Project: ') + Color.blue(result.projectRoot));
+    buffer.writeln(Color.dim('─' * _terminalWidth));
 
-      buffer.writeln('$indent${Color.blue('├─')} ${entry.key.split('/').last}'
-          ' ${Color.dim('($count files, ${_formatSize(size)})')}');
+    // Sort by size to show largest directories first
+    final sortedDirs = dirStats.entries.toList()
+      ..sort((a, b) => b.value.totalSize.compareTo(a.value.totalSize));
+
+    // Group directories by their parent
+    final Map<String, List<MapEntry<String, DirStats>>> dirsByParent = {};
+    for (final entry in sortedDirs) {
+      final parts = entry.key.split('/');
+      final parentPath =
+          parts.length > 1 ? parts.take(parts.length - 1).join('/') : '';
+      dirsByParent.putIfAbsent(parentPath, () => []).add(entry);
+    }
+
+    _printDirectoryTree(buffer, dirsByParent, '', 0);
+  }
+
+  void _printDirectoryTree(
+    StringBuffer buffer,
+    Map<String, List<MapEntry<String, DirStats>>> dirsByParent,
+    String currentPath,
+    int level,
+  ) {
+    final dirs = dirsByParent[currentPath] ?? [];
+    for (var i = 0; i < dirs.length; i++) {
+      final entry = dirs[i];
+      final isLast = i == dirs.length - 1;
+      final prefix = '  ' * level + (isLast ? '└─' : '├─');
+      final name = entry.key.split('/').last;
+      final stats = entry.value;
+
+      buffer.writeln('$prefix ${Color.blue(name)} '
+          '${Color.dim('(${stats.fileCount} files, ${_formatSize(stats.totalSize)})')}');
+
+      // Recursively print children
+      _printDirectoryTree(
+        buffer,
+        dirsByParent,
+        entry.key,
+        level + 1,
+      );
     }
   }
 
@@ -123,21 +160,42 @@ class AnalysisView {
     buffer.writeln(Color.bold('\n⚠️  Optimization Opportunities'));
     buffer.writeln(Color.dim('─' * _terminalWidth));
 
-    final issuesByType = result.getIssuesByType();
+    for (final asset in result.assets) {
+      if (asset.issues.isEmpty) continue;
 
-    for (final entry in issuesByType.entries) {
-      final severity = entry.key.severity;
-      final icon = _getSeverityIcon(severity);
-      final colorize = _getSeverityColor(severity);
+      for (final issue in asset.issues) {
+        final icon = _getSeverityIcon(issue.severity);
+        final colorize = _getSeverityColor(issue.severity);
 
-      buffer.writeln(colorize('$icon ${entry.key.message}:'));
+        buffer.writeln(colorize('$icon ${asset.info.name}'));
+        buffer.writeln(colorize('   Current: ${_formatSize(asset.info.size)}'));
 
-      for (final asset in entry.value) {
-        final size = _formatSize(asset.info.size);
-        buffer.writeln(colorize('  • ${asset.info.name} '
-            '${Color.dim('($size)')}'));
+        // Add specific recommendations based on issue type
+        final recommendation = _getRecommendation(asset, issue);
+        buffer.writeln(colorize('   $recommendation'));
+        buffer.writeln('');
       }
-      buffer.writeln('');
+    }
+  }
+
+  String _getRecommendation(AssetDetail asset, AssetIssue issue) {
+    switch (issue.type) {
+      case IssueType.largeFile:
+        return _getFileSizeRecommendation(asset);
+      case IssueType.largeDimensions:
+        return _getDimensionsRecommendation(asset);
+      case IssueType.inefficientFormat:
+        return _getFormatRecommendation(asset);
+      case IssueType.duplicateContent:
+        return _getDuplicateRecommendation(asset);
+      case IssueType.highResolution:
+        return _getResolutionRecommendation(asset);
+      case IssueType.metadataPresent:
+        return _getMetadataRecommendation(asset);
+      case IssueType.uncompressedFormat:
+        return _getCompressionRecommendation(asset);
+      default:
+        return issue.message;
     }
   }
 
@@ -211,4 +269,113 @@ class AnalysisView {
 
     return stats;
   }
+}
+
+String _getFileSizeRecommendation(AssetDetail asset) {
+  final currentSize = asset.info.size / (1024 * 1024); // Convert to MB
+  final targetSize =
+      asset.info.type == 'png' ? 0.5 : 0.2; // 500KB for PNG, 200KB for others
+  final reduction =
+      ((currentSize - targetSize) / currentSize * 100).toStringAsFixed(0);
+
+  return '''
+   Recommended: < ${targetSize * 1000} KB (reduce by $reduction%)
+   → ${_getSizeOptimizationSteps(asset)}''';
+}
+
+String _getDimensionsRecommendation(AssetDetail asset) {
+  if (asset.imageInfo == null) return '';
+
+  final maxDimension = _getRecommendedDimension(asset);
+  return '''
+   Current: ${asset.imageInfo!.width}x${asset.imageInfo!.height}
+   Recommended: ${maxDimension}x${maxDimension}
+   → Resize image based on actual usage
+   → Consider creating different sizes for different devices''';
+}
+
+String _getFormatRecommendation(AssetDetail asset) {
+  final currentFormat = asset.info.type.toUpperCase();
+  final recommendedFormat = _getRecommendedFormat(asset);
+  final savings = _getEstimatedSavings(asset);
+
+  return '''
+   Current format: $currentFormat
+   Recommended: $recommendedFormat
+   → Estimated savings: $savings%
+   → ${_getFormatConversionSteps(asset)}''';
+}
+
+String _getDuplicateRecommendation(AssetDetail asset) {
+  return '''
+   Consider consolidating duplicate assets
+   → Check for similar files in the project
+   → Use a single shared asset where possible''';
+}
+
+String _getResolutionRecommendation(AssetDetail asset) {
+  return '''
+   High resolution may not be needed
+   → Consider target device requirements
+   → Optimize for actual display size''';
+}
+
+String _getMetadataRecommendation(AssetDetail asset) {
+  return '''
+   Contains unnecessary metadata
+   → Use tools like ExifTool to strip metadata
+   → Keep only essential information''';
+}
+
+String _getCompressionRecommendation(AssetDetail asset) {
+  return '''
+   File is not optimally compressed
+   → Use appropriate compression tools
+   → Consider converting to more efficient format''';
+}
+
+String _getSizeOptimizationSteps(AssetDetail asset) {
+  if (asset.info.type == 'png') {
+    return 'Use pngquant or tinypng for lossless compression';
+  } else if (asset.info.type == 'jpg' || asset.info.type == 'jpeg') {
+    return 'Use mozjpeg with quality 80-85';
+  }
+  return 'Convert to WebP for better compression';
+}
+
+int _getRecommendedDimension(AssetDetail asset) {
+  final path = asset.info.path.toLowerCase();
+  if (path.contains('background') || path.contains('hero')) {
+    return 1920;
+  } else if (path.contains('thumbnail') || path.contains('avatar')) {
+    return 200;
+  }
+  return 1024;
+}
+
+String _getRecommendedFormat(AssetDetail asset) {
+  if (asset.imageInfo?.hasAlpha == true) {
+    return 'WebP (supports transparency)';
+  }
+  if (asset.info.size < 50 * 1024) {
+    // Less than 50KB
+    return 'Keep current format';
+  }
+  return 'JPEG (85% quality)';
+}
+
+int _getEstimatedSavings(AssetDetail asset) {
+  if (asset.info.type == 'png' && asset.imageInfo?.hasAlpha == false) {
+    return 60;
+  } else if (asset.info.type == 'jpg' || asset.info.type == 'jpeg') {
+    return 30;
+  }
+  return 40;
+}
+
+String _getFormatConversionSteps(AssetDetail asset) {
+  if (asset.info.type == 'png' && asset.imageInfo?.hasAlpha == false) {
+    return 'Convert to JPEG using: cwebp -q 85 ${asset.info.name}';
+  }
+  return 'Convert to WebP using: cwebp -q 85 ${asset.info.name}';
 }
