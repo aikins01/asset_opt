@@ -45,10 +45,10 @@ class AnalyzeCommand {
       );
 
       final result = AnalysisResult(
-        assets: assetDetails,
-        scanErrors: scanResult.errors,
-        analyzedAt: DateTime.now(),
-      );
+          assets: assetDetails,
+          scanErrors: scanResult.errors,
+          analyzedAt: DateTime.now(),
+          projectRoot: projectPath);
 
       _state.completeAnalysis(result);
       return result;
@@ -61,41 +61,41 @@ class AnalyzeCommand {
   List<AssetIssue> _analyzeAssetIssues(AssetInfo asset, ImageInfo? imageInfo) {
     final issues = <AssetIssue>[];
 
-    // Check file size (1MB limit)
     if (asset.size > 1024 * 1024) {
       issues.add(AssetIssue(
         type: IssueType.largeFile,
-        details: '${_formatSize(asset.size)} exceeds 1MB limit',
+        values: {
+          'maxSize': '1 MB',
+          'currentSize': '${(asset.size / 1024 / 1024).toStringAsFixed(1)} MB',
+        },
       ));
     }
 
-    // Check image dimensions if available
-    if (imageInfo != null) {
-      if (imageInfo.width > 2000 || imageInfo.height > 2000) {
-        issues.add(AssetIssue(
-          type: IssueType.largeDimensions,
-          details:
-              '${imageInfo.width}x${imageInfo.height} exceeds 2000px limit',
-        ));
-      }
+    if (imageInfo != null &&
+        (imageInfo.width > 2000 || imageInfo.height > 2000)) {
+      issues.add(AssetIssue(
+        type: IssueType.largeDimensions,
+        values: {
+          'width': imageInfo.width.toString(),
+          'height': imageInfo.height.toString(),
+          'maxWidth': '2000',
+          'maxHeight': '2000',
+        },
+      ));
+    }
 
-      // Check for inefficient format usage
-      if (asset.type == 'png' && !imageInfo.hasAlpha) {
-        issues.add(AssetIssue(
-          type: IssueType.inefficientFormat,
-          details: 'PNG without transparency could be JPEG',
-        ));
-      }
+    if (asset.type == 'png' && !imageInfo!.hasAlpha) {
+      issues.add(AssetIssue(
+        type: IssueType.inefficientFormat,
+        values: {
+          'format': 'PNG',
+          'recommendedFormat': 'JPEG/WebP',
+          'savingsPercent': '60',
+          'reason': 'Image has no transparency, PNG unnecessary',
+        },
+      ));
     }
 
     return issues;
-  }
-
-  String _formatSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    }
-    return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
   }
 }
