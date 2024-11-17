@@ -1,3 +1,5 @@
+# Changelog
+
 ## 0.1.0
 
 Initial release with the following features:
@@ -19,3 +21,7 @@ Initial release with the following features:
   - Progress tracking
   - JSON report generation
   - Size statistics
+
+## 1.0.0
+
+- Initial version
