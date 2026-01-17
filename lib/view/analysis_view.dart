@@ -2,10 +2,10 @@ import 'package:asset_opt/model/analysis_result.dart';
 import 'package:asset_opt/model/asset_detail.dart';
 import 'package:asset_opt/model/asset_issue.dart';
 import 'package:asset_opt/view/terminal_colors.dart';
+import 'package:path/path.dart' as p;
 
 class AnalysisView {
   static const _terminalWidth = 80;
-  static const _barWidth = 40;
 
   String formatAnalysisResult(AnalysisResult result) {
     final buffer = StringBuffer();
@@ -95,7 +95,7 @@ class AnalysisView {
 
       // Progress bar using blocks
       final bar =
-          '${'│' + barColor('█' * barLength)}${Color.dim(' ' * (30 - barLength))}│';
+          '│${barColor('█' * barLength)}${Color.dim(' ' * (30 - barLength))}│';
 
       buffer.writeln('$typeStr '
           '$sizeStr '
@@ -122,10 +122,9 @@ class AnalysisView {
     // Group directories by their parent
     final Map<String, List<MapEntry<String, DirStats>>> dirsByParent = {};
     for (final entry in sortedDirs) {
-      final parts = entry.key.split('/');
-      final parentPath =
-          parts.length > 1 ? parts.take(parts.length - 1).join('/') : '';
-      dirsByParent.putIfAbsent(parentPath, () => []).add(entry);
+      final parentPath = p.dirname(entry.key);
+      final normalizedParent = parentPath == entry.key ? '' : parentPath;
+      dirsByParent.putIfAbsent(normalizedParent, () => []).add(entry);
     }
 
     _printDirectoryTree(buffer, dirsByParent, '', 0);
@@ -263,7 +262,9 @@ class AnalysisView {
       var dir = asset.info.directory;
       while (dir.isNotEmpty && dir != '.') {
         stats.putIfAbsent(dir, () => DirStats()).addAsset(asset);
-        dir = dir.substring(0, dir.lastIndexOf('/'));
+        final parent = p.dirname(dir);
+        if (parent == dir) break;
+        dir = parent;
       }
     }
 
@@ -289,7 +290,7 @@ String _getDimensionsRecommendation(AssetDetail asset) {
   final maxDimension = _getRecommendedDimension(asset);
   return '''
    Current: ${asset.imageInfo!.width}x${asset.imageInfo!.height}
-   Recommended: ${maxDimension}x${maxDimension}
+   Recommended: ${maxDimension}x$maxDimension
    → Resize image based on actual usage
    → Consider creating different sizes for different devices''';
 }
