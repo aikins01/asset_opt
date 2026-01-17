@@ -21,29 +21,33 @@ class OptimizationView {
 
   String formatOptimizationResult(List<OptimizationResult> results) {
     final buffer = StringBuffer();
+
+    if (results.isEmpty) {
+      buffer.writeln('\nNo files were optimized.');
+      buffer.writeln(Color.dim(
+          'Images may already be optimized or compression yielded no savings.'));
+      return buffer.toString();
+    }
+
     final totalSaved = results.fold(0, (sum, r) => sum + r.savedBytes);
     final totalOriginal = results.fold(
       0,
       (sum, r) => sum + r.originalAsset.size,
     );
 
-    // Header
-    buffer.writeln(Color.cyan('\n✨ Optimization Results'));
+    buffer.writeln(Color.cyan('\nOptimization Results'));
     buffer.writeln(Color.dim('=' * _terminalWidth));
 
-    // Summary
     buffer.writeln(
         '\nOptimized ${Color.yellow(results.length.toString())} files');
+    final savingsPercent = totalOriginal > 0
+        ? (totalSaved / totalOriginal * 100).toStringAsFixed(1)
+        : '0.0';
     buffer.writeln('Total space saved: ${Color.green(_formatSize(totalSaved))} '
-        '${Color.dim('(${(totalSaved / totalOriginal * 100).toStringAsFixed(1)}%)')}');
+        '${Color.dim('($savingsPercent%)')}');
 
-    // Savings by type
     _writeSavingsByType(buffer, results, totalSaved);
-
-    // Best optimizations
     _writeBestOptimizations(buffer, results);
-
-    // Add recommendations if needed
     _writeRecommendations(buffer, results);
 
     return buffer.toString();

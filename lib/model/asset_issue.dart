@@ -1,5 +1,16 @@
-enum IssueSeverity { error, warning, suggestion }
+/// Severity level of an optimization issue.
+enum IssueSeverity {
+  /// Critical issue that should be fixed.
+  error,
 
+  /// Important issue that may impact performance.
+  warning,
+
+  /// Optional improvement suggestion.
+  suggestion,
+}
+
+/// Types of optimization issues that can be detected.
 class IssueType {
   final String message;
   final String recommendation;
@@ -11,7 +22,6 @@ class IssueType {
     this.severity,
   );
 
-  // Pre-defined issue types
   static const largeFile = IssueType._internal(
     'File size exceeds recommended limit',
     'Recommended size: < {maxSize}. Current: {currentSize}\n'
@@ -85,18 +95,28 @@ class IssueType {
       };
 }
 
+/// An optimization issue detected for a specific asset.
 class AssetIssue {
+  /// The type of issue detected.
   final IssueType type;
+
+  /// Additional details about this specific occurrence.
   final String? details;
+
+  /// Template values for the recommendation message.
   final Map<String, String> values;
 
+  /// Creates an asset issue.
   AssetIssue({
     required this.type,
     this.details,
     Map<String, String>? values,
   }) : values = values ?? {};
 
+  /// Human-readable issue message.
   String get message => details ?? type.message;
+
+  /// The severity of this issue.
   IssueSeverity get severity => type.severity;
 
   String get formattedRecommendation {

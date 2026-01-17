@@ -1,51 +1,53 @@
-# asset_opt 🎯
+# asset_opt
 
-A powerful Flutter/Dart tool for analyzing and optimizing project assets. Get detailed insights into your asset usage and automatically optimize images to improve your app's performance.
+A CLI tool for analyzing and optimizing Flutter/Dart project assets. Provides detailed analysis, actionable recommendations, and automatic image optimization.
 
-![Repo Card](https://github.com/aikins01/asset_opt/blob/cb72281e3a97bc72c3199a12b0fd7a5dcb47d43c/.github/assets/asset_opt_repocard.png)
+![Repo Card](https://raw.githubusercontent.com/aikins01/asset_opt/main/.github/assets/asset_opt_repocard.png)
 
-## Features 🚀
+## Features
 
-### Detailed Asset Analysis
-- 📊 Size and type distribution visualization
-- 📁 Directory structure breakdown
-- 🔍 Image dimension analysis
-- ⚠️ Issue detection and recommendations
+### Analysis
 
-### Smart Optimization
-- 🗜️ Automatic image compression
-- 📏 Size reduction while maintaining quality
-- 🔄 Format conversion suggestions
-- 💾 Safe backups before optimization
+- Size and type distribution visualization
+- Directory structure breakdown
+- Image dimension analysis
+- Unused asset detection
+- Issue detection with recommendations
 
-### Beautiful Reports
-- 📈 Visual progress tracking
-- 🎨 Color-coded terminal output
-- 📋 Detailed JSON reports
-- 📊 Size statistics and savings
+### Optimization
 
-## Installation 📥
+- Automatic image compression (JPEG, PNG, WebP)
+- Format conversion (PNG -> WebP for non-alpha images)
+- SVG minification (~70% reduction typical)
+- Safe backups before any modification
+
+### Cross-Platform
+
+- Zero-setup native compression via bundled binaries
+- Supports macOS (arm64/x64), Linux (x64/arm64), Windows (x64)
+
+## Installation
 
 ```bash
 dart pub global activate asset_opt
 ```
 
-Or add to your `pubspec.yaml` for project-specific usage:
+Or add to your project's dev dependencies:
 
 ```yaml
 dev_dependencies:
-  asset_opt: ^1.0.2
+    asset_opt: ^1.0.4
 ```
 
-## Usage 💻
+## Usage
 
 ### Command Line
 
 ```bash
-# Show help and available commands
+# Show help
 asset_opt --help
 
-# Analyze project assets
+# Analyze assets
 asset_opt --analyze
 
 # Analyze and optimize
@@ -54,8 +56,17 @@ asset_opt --optimize
 # Specify project path and quality
 asset_opt -p /path/to/project -q 85 --optimize
 
+# Create default config file
+asset_opt --init
+
+# Use optimization preset
+asset_opt --optimize --preset thumbnails
+
 # Verbose output
 asset_opt --verbose
+
+# Disable colors (for CI/redirected output)
+asset_opt --no-color
 ```
 
 ### As a Library
@@ -64,39 +75,32 @@ asset_opt --verbose
 import 'package:asset_opt/asset_opt.dart';
 
 void main() async {
-  // Initialize services
   final fileService = FileService();
   final imageService = ImageService();
   final analysisState = AnalysisState();
 
-  // Create analyzer
   final analyzer = AnalyzeCommand(
     fileService,
     imageService,
     analysisState,
   );
 
-  // Run analysis
   final analysis = await analyzer.execute('./');
 
-  // Check for issues
   if (analysis.hasIssues()) {
-    print('Found optimization opportunities:');
     for (final asset in analysis.assets) {
-      if (asset.issues.isNotEmpty) {
-        print('${asset.info.name}:');
-        for (final issue in asset.issues) {
-          print('  - ${issue.message}');
-        }
+      for (final issue in asset.issues) {
+        print('${asset.info.name}: ${issue.message}');
       }
     }
   }
 }
 ```
 
-## Output Examples 📸
+## Output
 
-### Asset Analysis
+### Analysis Report
+
 ```
 📊 Asset Analysis Report
 ────────────────────────
@@ -110,9 +114,8 @@ Project: /Users/username/projects/my_app
 ```
 
 ### Type Distribution
+
 ```
-🗂  Assets by Type
-────────────────────────
 Type     Size       Files   Distribution
 PNG      22.4 MB    631    │████████████████████████████  │ 65.2%
 JPEG     10.2 MB    492    │████████████████              │ 29.8%
@@ -120,74 +123,55 @@ WEBP      1.5 MB      4    │███                           │  4.3%
 SVG     829.0 B       1    │                              │  0.7%
 ```
 
-### Optimization Suggestions
-```
-⚠️  Optimization Opportunities
-────────────────────────
-❌ background.png
-   Current: 2.5 MB
-   Recommended: < 500 KB (reduce by 80%)
-   → Use pngquant or tinypng for lossless compression
-```
+## Configuration
 
-## Configuration ⚙️
-
-Create `asset_opt.yaml` in your project root:
+Create `asset_opt.yaml` in your project root, or run `asset_opt --init`:
 
 ```yaml
-# Asset optimization settings
 optimization:
-  jpeg_quality: 85
-  webp_quality: 80
-  strip_metadata: true
+    jpeg_quality: 85
+    webp_quality: 80
+    strip_metadata: true
+    convert_png_to_webp: true
 
-# Size limits
 limits:
-  max_file_size: 1MB
-  max_total_size: 50MB
+    max_file_size: 1MB
+    max_dimensions: 2000
 
-# Patterns to exclude
+presets:
+    thumbnails:
+        max_dimensions: 200
+        jpeg_quality: 75
+    backgrounds:
+        max_dimensions: 1920
+        jpeg_quality: 90
+    icons:
+        max_dimensions: 512
+        jpeg_quality: 85
+
 exclude:
-  - '**/test/assets/*'
+    - "**/test/assets/*"
+    - "**/fixtures/*"
 ```
 
-## FAQ ❓
+## FAQ
 
-**Q: Is it safe to use on production assets?**
-A: Yes! The tool creates backups before any optimization.
+**Is it safe to use on production assets?**  
+Yes. The tool creates backups before any optimization.
 
-**Q: What image formats are supported?**
-A: Currently supports PNG, JPEG, WebP, and SVG files.
+**Should I commit the generated reports?**  
+No. Add `asset_opt_reports/` to your `.gitignore`.
 
-**Q: Will this work with my CI/CD pipeline?**
-A: Yes, the tool can be integrated into CI/CD workflows.
+**What formats are supported?**  
+PNG, JPEG, WebP, and SVG.
 
-## Contributing 🤝
+**Does it work with CI/CD?**  
+Yes. Use `--no-color` for cleaner logs.
 
-Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting pull requests.
+## Contributing
 
-## Roadmap 🗺️
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-### Version 1.2.0
-- [ ] Configuration file support
-- [ ] Custom optimization presets
-- [ ] Watch mode for development
+## License
 
-### Version 1.3.0
-- [ ] WebP conversion
-- [ ] SVG optimization
-- [ ] Asset usage analysis
-
-## License 📄
-
-Licensed under the [MIT License](LICENSE) file for details.
-
-## Support 💪
-
-If you find this tool helpful, please consider:
-- Starring the repository ⭐
-- Reporting issues 🐛
-- Contributing to the code 💻
-- Sharing with others 🌟
-
----
+[MIT](LICENSE)

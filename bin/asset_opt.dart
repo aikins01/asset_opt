@@ -21,11 +21,13 @@ void main(List<String> arguments) async {
         abbr: 'o', help: 'Optimize assets after analysis', defaultsTo: false)
     ..addOption('report-dir',
         help: 'Directory to save reports', defaultsTo: 'asset_opt_reports')
+    ..addOption('preset', help: 'Use optimization preset from config file')
+    ..addFlag('init', help: 'Create default asset_opt.yaml config', negatable: false)
     ..addFlag('verbose',
         abbr: 'v', help: 'Show detailed output', defaultsTo: false)
     ..addFlag('no-color', help: 'Disable colored output', negatable: false);
 
-  late final ArgResults parsedArgs;
+  ArgResults? parsedArgs;
 
   try {
     parsedArgs = parser.parse(arguments);
@@ -42,7 +44,33 @@ void main(List<String> arguments) async {
       Color.enabled = false;
     }
 
-    // Initialize services
+    final projectPath = parsedArgs['path'] as String;
+    final configService = ConfigService();
+
+    if (parsedArgs['init']) {
+      final created = await configService.createDefaultConfig(projectPath);
+      if (created) {
+        print('Created asset_opt.yaml in $projectPath');
+      } else {
+        print('asset_opt.yaml already exists. Delete it first to regenerate.');
+      }
+      return;
+    }
+
+    final configResult = await configService.loadConfig(projectPath);
+    if (configResult.hasError) {
+      print('Warning: ${configResult.error}; using defaults');
+    }
+    final config = configResult.config;
+    if (parsedArgs['verbose'] && config != null) {
+      print('Loaded config from asset_opt.yaml');
+    }
+
+    await NativeOptimizer.initialize();
+    if (parsedArgs['verbose']) {
+      print('Native tools: ${NativeOptimizer.availableTools}');
+    }
+
     final fileService = FileService();
     final imageService = ImageService();
     final cacheService = CacheService(
@@ -50,16 +78,13 @@ void main(List<String> arguments) async {
     );
     final reportService = ReportService();
 
-    // Initialize states
     final analysisState = AnalysisState();
     final optimizationState = OptimizationState();
     final reportState = ReportState();
 
-    // Initialize views
     final analysisView = AnalysisView();
     final optimizationView = OptimizationView();
 
-    // Create commands
     final analyzeCommand = AnalyzeCommand(
       fileService,
       imageService,
@@ -78,7 +103,6 @@ void main(List<String> arguments) async {
       reportState,
     );
 
-    // Setup progress reporting
     if (parsedArgs['verbose']) {
       optimizationState.addListener(ProgressReporter(optimizationState));
     }
@@ -87,45 +111,49 @@ void main(List<String> arguments) async {
     analysisState
         .addListener(AnalysisProgressListener(analysisState, progressView));
 
-    // Run analysis
-    final analysis = await analyzeCommand.execute(parsedArgs['path']);
-    stdout.write('\n'); // Clear progress line
+    final analysis = await analyzeCommand.execute(projectPath);
+    stdout.write('\n');
     print(analysisView.formatAnalysisResult(analysis));
 
-    // Save analysis report
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     await reportCommand.execute(
       analysis,
-      [], // No optimization results yet
-      p.join(parsedArgs['report-dir'],
-          'analysis_${DateTime.now().millisecondsSinceEpoch}.json'),
+      [],
+      parsedArgs['report-dir'],
+      timestamp,
     );
 
-    // Run optimization if requested
-    if (parsedArgs['optimize'] && analysis.hasIssues()) {
-      final config = OptimizationConfig(
-        jpegQuality: int.parse(parsedArgs['quality']),
-        webpQuality: 80,
-        stripMetadata: true,
-      );
+    if (parsedArgs['optimize']) {
+      if (!analysis.hasIssues()) {
+        print('\nNo optimization issues found.');
+        return;
+      }
+
+      final presetName = parsedArgs['preset'] as String?;
+      final optimizationConfig = config?.toOptimizationConfig(presetName: presetName) ??
+          OptimizationConfig(
+            jpegQuality: int.parse(parsedArgs['quality']),
+            webpQuality: 80,
+            stripMetadata: true,
+          );
 
       print('\nOptimizing assets...\n');
       final optimizationResults = await optimizeCommand.execute(
         analysis,
-        config,
+        optimizationConfig,
       );
 
       print(optimizationView.formatOptimizationResult(optimizationResults));
 
-      // Save optimization report
       await reportCommand.execute(
         analysis,
         optimizationResults,
-        p.join(parsedArgs['report-dir'],
-            'optimization_${DateTime.now().millisecondsSinceEpoch}.json'),
+        parsedArgs['report-dir'],
+        timestamp,
       );
     }
   } catch (e, stackTrace) {
-    if (parsedArgs['verbose']) {
+    if (parsedArgs?['verbose'] == true) {
       print('Error: $e\n$stackTrace');
     } else {
       print('Error: $e');

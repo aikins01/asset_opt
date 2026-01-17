@@ -12,22 +12,21 @@ class ReportCommand {
   Future<void> execute(
     AnalysisResult analysis,
     List<OptimizationResult> optimizations,
-    String outputPath,
+    String outputDir,
+    String reportName,
   ) async {
     try {
       _state.startReporting();
 
-      // Generate and save analysis report
       await _reportService.saveAnalysisReport(
         analysis,
-        '$outputPath/analysis_report.json',
+        '$outputDir/${reportName}_analysis.json',
       );
 
-      // Generate and save optimization report
       if (optimizations.isNotEmpty) {
         await _reportService.saveOptimizationReport(
           optimizations,
-          '$outputPath/optimization_report.json',
+          '$outputDir/${reportName}_optimization.json',
         );
       }
 

@@ -7,13 +7,16 @@ import 'package:asset_opt/service/cache_service.dart';
 import 'package:asset_opt/service/file_service.dart';
 import 'package:asset_opt/service/image_service.dart';
 import 'package:asset_opt/state/optimization_state.dart';
+import 'package:asset_opt/utils/exceptions.dart';
 
+/// Optimizes project assets based on analysis results.
 class OptimizeCommand {
   final FileService _fileService;
   final ImageService _imageService;
   final CacheService _cacheService;
   final OptimizationState _state;
 
+  /// Creates an optimize command with required services.
   OptimizeCommand(
     this._fileService,
     this._imageService,
@@ -21,6 +24,9 @@ class OptimizeCommand {
     this._state,
   );
 
+  /// Optimizes assets identified in the analysis.
+  ///
+  /// Creates backups before modifying files and restores on failure.
   Future<List<OptimizationResult>> execute(
     AnalysisResult analysis,
     OptimizationConfig config,
@@ -28,13 +34,19 @@ class OptimizeCommand {
     try {
       _state.startOptimization();
       final results = <OptimizationResult>[];
+      final total = analysis.assets.length;
+
+      if (total == 0) {
+        _state.updateProgress(1.0);
+        _state.completeOptimization();
+        return results;
+      }
+
       var processed = 0;
 
       for (final asset in analysis.assets) {
-        // Update progress
-        _state.updateProgress(processed / analysis.assets.length);
+        _state.updateProgress(processed / total);
 
-        // Skip if cached and unchanged
         if (!_cacheService.shouldOptimize(
           asset.info.path,
           asset.info.size,
@@ -45,21 +57,19 @@ class OptimizeCommand {
         }
 
         try {
-          // Backup original file
           final file = File(asset.info.path);
           await _fileService.backupFile(file);
 
-          // Optimize image
           final optimizedFile = await _imageService.optimizeImage(
             file,
             config,
+            hasAlpha: asset.imageInfo?.hasAlpha,
           );
 
           if (optimizedFile != null) {
             final optimizedSize = await optimizedFile.length();
             final savedBytes = asset.info.size - optimizedSize;
 
-            // Only keep optimization if it actually saved space
             if (savedBytes > 0) {
               await optimizedFile.copy(asset.info.path);
 
@@ -83,10 +93,11 @@ class OptimizeCommand {
             await optimizedFile.delete();
           }
 
-          // Cleanup backup
           await _fileService.cleanupBackups([asset.info.path]);
+        } on OptimizationSkippedException catch (e) {
+          await _fileService.cleanupBackups([asset.info.path]);
+          _state.addError(asset.info.path, e.message);
         } catch (e) {
-          // Restore from backup on error
           await _fileService.restoreBackup(asset.info.path);
           _state.addError(asset.info.path, e.toString());
         }

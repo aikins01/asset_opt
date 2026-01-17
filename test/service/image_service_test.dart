@@ -4,7 +4,6 @@ import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
 import 'package:asset_opt/service/image_service.dart';
 import 'package:asset_opt/model/optimization_config.dart';
-import 'package:asset_opt/utils/exceptions.dart';
 
 void main() {
   late Directory tempDir;
@@ -62,9 +61,9 @@ void main() {
 
       final result = await imageService.getImageInfo(testFile);
 
-      expect(result, isNotNull);
-      expect(result!.width, equals(200));
-      expect(result.height, equals(150));
+      expect(result.hasInfo, isTrue);
+      expect(result.info!.width, equals(200));
+      expect(result.info!.height, equals(150));
     });
 
     test('returns correct dimensions for valid JPEG', () async {
@@ -72,9 +71,9 @@ void main() {
 
       final result = await imageService.getImageInfo(testFile);
 
-      expect(result, isNotNull);
-      expect(result!.width, equals(300));
-      expect(result.height, equals(200));
+      expect(result.hasInfo, isTrue);
+      expect(result.info!.width, equals(300));
+      expect(result.info!.height, equals(200));
     });
 
     test('detects alpha channel in PNG', () async {
@@ -99,26 +98,35 @@ void main() {
       final resultWithAlpha = await imageService.getImageInfo(withAlphaFile);
       final resultWithoutAlpha = await imageService.getImageInfo(withoutAlphaFile);
 
-      expect(resultWithAlpha!.hasAlpha, isTrue);
-      expect(resultWithoutAlpha!.hasAlpha, isFalse);
+      expect(resultWithAlpha.info!.hasAlpha, isTrue);
+      expect(resultWithoutAlpha.info!.hasAlpha, isFalse);
     });
 
-    test('returns null for invalid image file', () async {
+    test('returns unsupported for invalid image file', () async {
       final invalidFile = File(path.join(tempDir.path, 'invalid.png'));
       await invalidFile.writeAsBytes([0, 1, 2, 3, 4, 5]);
 
       final result = await imageService.getImageInfo(invalidFile);
-      expect(result, isNull);
+      expect(result.hasInfo, isFalse);
+      expect(result.hasError, isFalse);
     });
 
-    test('throws for empty file', () async {
+    test('returns error for empty file', () async {
       final emptyFile = File(path.join(tempDir.path, 'empty.png'));
       await emptyFile.writeAsBytes([]);
 
-      expect(
-        () => imageService.getImageInfo(emptyFile),
-        throwsA(isA<AssetOptException>()),
-      );
+      final result = await imageService.getImageInfo(emptyFile);
+      expect(result.hasInfo, isFalse);
+      expect(result.hasError, isTrue);
+    });
+
+    test('returns error for non-existent file', () async {
+      final missingFile = File(path.join(tempDir.path, 'missing.png'));
+
+      final result = await imageService.getImageInfo(missingFile);
+      expect(result.hasInfo, isFalse);
+      expect(result.hasError, isTrue);
+      expect(result.error, contains('Cannot read file'));
     });
   });
 

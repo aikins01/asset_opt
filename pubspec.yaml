@@ -1,9 +1,9 @@
 name: asset_opt
 description: A Flutter/Dart tool for analyzing and optimizing project assets. Provides detailed analysis, recommendations, and automatic optimizations for images.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/aikins01/asset_opt
 repository: https://github.com/aikins01/asset_opt
-documentation: https://github.com/aikins01/asset_opt/docs
+documentation: https://github.com/aikins01/asset_opt#readme
 issue_tracker: https://github.com/aikins01/asset_opt/issues
 
 environment:
@@ -14,8 +14,8 @@ dependencies:
   args: ^2.6.0
   image: ^4.3.0
   path: ^1.9.1
+  xml: ^6.5.0
   yaml: ^3.1.2
-  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^6.0.0

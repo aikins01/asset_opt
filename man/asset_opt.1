@@ -1,0 +1,112 @@
+.TH ASSET_OPT 1 "January 2025" "asset_opt 1.0.4" "User Commands"
+.SH NAME
+asset_opt \- analyze and optimize Flutter/Dart project assets
+.SH SYNOPSIS
+.B asset_opt
+[\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B asset_opt
+scans Flutter project assets, detects optimization opportunities,
+and can automatically optimize images for reduced file sizes.
+.PP
+It analyzes assets defined in pubspec.yaml, detecting large files,
+inefficient formats, oversized dimensions, and unused assets.
+.SH OPTIONS
+.TP
+.BR \-p ", " \-\-path =\fIPATH\fR
+Path to Flutter project root. Default: current directory.
+.TP
+.BR \-a ", " \-\-analyze
+Only analyze assets without optimizing.
+.TP
+.BR \-o ", " \-\-optimize
+Optimize assets after analysis.
+.TP
+.BR \-q ", " \-\-quality =\fINUM\fR
+JPEG quality (1-100). Default: 85.
+.TP
+.BR \-\-preset =\fINAME\fR
+Use optimization preset from config file.
+.TP
+.BR \-\-report\-dir =\fIDIR\fR
+Directory to save reports. Default: asset_opt_reports.
+.TP
+.BR \-\-init
+Create default asset_opt.yaml config file.
+.TP
+.BR \-v ", " \-\-verbose
+Show detailed output.
+.TP
+.BR \-\-no\-color
+Disable colored output (useful for CI).
+.TP
+.BR \-h ", " \-\-help
+Show help message.
+.SH EXAMPLES
+.TP
+Analyze assets in current directory:
+.B asset_opt \-\-analyze
+.TP
+Analyze and optimize:
+.B asset_opt \-\-optimize
+.TP
+Use custom quality and path:
+.B asset_opt \-p /path/to/project \-q 80 \-\-optimize
+.TP
+Create config file:
+.B asset_opt \-\-init
+.TP
+Use preset from config:
+.B asset_opt \-\-optimize \-\-preset thumbnails
+.SH CONFIGURATION
+Create \fBasset_opt.yaml\fR in project root:
+.PP
+.nf
+optimization:
+  jpeg_quality: 85
+  webp_quality: 80
+  strip_metadata: true
+  convert_png_to_webp: true
+
+limits:
+  max_file_size: 1MB
+  max_dimensions: 2000
+
+presets:
+  thumbnails:
+    max_dimensions: 200
+    jpeg_quality: 75
+
+exclude:
+  - "**/test/assets/*"
+.fi
+.SH SUPPORTED FORMATS
+PNG, JPEG, WebP, SVG, GIF (analysis only)
+.SH FILES
+.TP
+.I asset_opt.yaml
+Project configuration file.
+.TP
+.I asset_opt_reports/
+Generated analysis reports.
+.TP
+.I ~/.cache/asset_opt/
+Cached native binaries.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Error occurred.
+.SH BUGS
+Report bugs at: https://github.com/aikins01/asset_opt/issues
+.SH AUTHOR
+Written by Aikins Laryea.
+.SH SEE ALSO
+.BR flutter (1),
+.BR dart (1),
+.BR cwebp (1),
+.BR pngquant (1)
+.SH COPYRIGHT
+MIT License. See LICENSE file in source distribution.

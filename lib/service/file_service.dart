@@ -5,6 +5,7 @@ import 'package:asset_opt/utils/exceptions.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
+/// Service for file system operations on project assets.
 class FileService {
   static const _supportedTypes = {
     '.jpg': 'jpeg',
@@ -12,9 +13,11 @@ class FileService {
     '.png': 'png',
     '.webp': 'webp',
     '.svg': 'svg',
-    '.gif': 'gif'
+    '.gif': 'gif',
+    '.json': 'json',
   };
 
+  /// Reads and parses the pubspec.yaml file.
   Future<YamlMap?> readPubspec(String projectPath) async {
     try {
       final pubspecFile = File(path.join(projectPath, 'pubspec.yaml'));
@@ -31,6 +34,7 @@ class FileService {
     }
   }
 
+  /// Finds asset paths defined in pubspec.yaml.
   Future<List<String>> findAssetPaths(String projectPath) async {
     final pubspec = await readPubspec(projectPath);
 
@@ -49,6 +53,7 @@ class FileService {
     }
   }
 
+  /// Scans directories for asset files.
   Future<FileScanResult> scanAssets(
     List<String> assetPaths, {
     bool recursive = true,
@@ -98,6 +103,7 @@ class FileService {
     );
   }
 
+  /// Creates a backup copy of a file before optimization.
   Future<void> backupFile(File file) async {
     final backupPath = '${file.path}.backup';
     try {
@@ -107,6 +113,7 @@ class FileService {
     }
   }
 
+  /// Restores a file from its backup.
   Future<void> restoreBackup(String originalPath) async {
     final backupFile = File('$originalPath.backup');
 
@@ -120,6 +127,7 @@ class FileService {
     }
   }
 
+  /// Removes backup files after successful optimization.
   Future<void> cleanupBackups(List<String> paths) async {
     for (final path in paths) {
       try {

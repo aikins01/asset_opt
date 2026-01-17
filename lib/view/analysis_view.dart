@@ -10,22 +10,16 @@ class AnalysisView {
   String formatAnalysisResult(AnalysisResult result) {
     final buffer = StringBuffer();
 
-    // Header
     _writeHeader(buffer);
-
-    // Overview
     _writeOverview(buffer, result);
-
-    // Type breakdown with visual chart
     _writeTypeBreakdown(buffer, result);
-
-    // Directory breakdown
     _writeDirectoryBreakdown(buffer, result);
-
-    // Largest assets
     _writeLargestAssets(buffer, result);
 
-    // Issues and suggestions
+    if (result.hasUnusedAssets()) {
+      _writeUnusedAssets(buffer, result);
+    }
+
     if (result.hasIssues()) {
       _writeIssues(buffer, result);
     }
@@ -47,7 +41,6 @@ class AnalysisView {
         'Total assets: ${Color.yellow(result.assets.length.toString())}');
     buffer.writeln('Total size: ${Color.yellow(_formatSize(totalSize))}');
 
-    // Add breakdown percentages
     final sizeByType = result.getSizeByType();
     buffer.writeln('\nBreakdown:');
     for (final entry in sizeByType.entries) {
@@ -63,11 +56,20 @@ class AnalysisView {
     final typeStats = result.getSizeByType().entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
+    if (typeStats.isEmpty) {
+      buffer.writeln(Color.dim('No assets found.'));
+      return;
+    }
+
+    final totalSize = result.getTotalSize();
+    if (totalSize == 0) {
+      buffer.writeln(Color.dim('Total asset size is 0 bytes.'));
+      return;
+    }
+
     final maxSize =
         typeStats.map((e) => e.value).reduce((a, b) => a > b ? a : b);
-    final totalSize = result.getTotalSize();
 
-    // Column headers
     buffer.writeln('${'Type'.padRight(8)} '
         '${'Size'.padRight(10)} '
         '${'Files'.padRight(7)} '
@@ -79,21 +81,12 @@ class AnalysisView {
       final count = result.getCountByType()[entry.key] ?? 0;
       final barLength = (entry.value / maxSize * 30).round();
 
-      // Color based on file type
       final typeColor = _getTypeColor(entry.key);
       final barColor = _getBarColor(entry.key);
-
-      // Type column
       final typeStr = typeColor(entry.key.toUpperCase().padRight(8));
-
-      // Size column with color based on size percentage
       final sizeColor = _getSizeColor(entry.value / totalSize * 100);
       final sizeStr = sizeColor(_formatSize(entry.value).padRight(10));
-
-      // File count
       final countStr = Color.dim(count.toString().padRight(7));
-
-      // Progress bar using blocks
       final bar =
           '│${barColor('█' * barLength)}${Color.dim(' ' * (30 - barLength))}│';
 
@@ -110,20 +103,17 @@ class AnalysisView {
 
     buffer.writeln(Color.bold('\n📁 Directory Structure'));
     buffer.writeln(Color.dim('─' * _terminalWidth));
-
-    // Show project root path
     buffer.writeln(Color.dim('Project: ') + Color.blue(result.projectRoot));
     buffer.writeln(Color.dim('─' * _terminalWidth));
 
-    // Sort by size to show largest directories first
     final sortedDirs = dirStats.entries.toList()
       ..sort((a, b) => b.value.totalSize.compareTo(a.value.totalSize));
 
-    // Group directories by their parent
     final Map<String, List<MapEntry<String, DirStats>>> dirsByParent = {};
     for (final entry in sortedDirs) {
       final parentPath = p.dirname(entry.key);
-      final normalizedParent = parentPath == entry.key ? '' : parentPath;
+      final normalizedParent =
+          (parentPath == entry.key || parentPath == '.') ? '' : parentPath;
       dirsByParent.putIfAbsent(normalizedParent, () => []).add(entry);
     }
 
@@ -141,13 +131,12 @@ class AnalysisView {
       final entry = dirs[i];
       final isLast = i == dirs.length - 1;
       final prefix = '  ' * level + (isLast ? '└─' : '├─');
-      final name = entry.key.split('/').last;
+      final name = p.basename(entry.key);
       final stats = entry.value;
 
       buffer.writeln('$prefix ${Color.blue(name)} '
           '${Color.dim('(${stats.fileCount} files, ${_formatSize(stats.totalSize)})')}');
 
-      // Recursively print children
       _printDirectoryTree(
         buffer,
         dirsByParent,
@@ -161,14 +150,20 @@ class AnalysisView {
     buffer.writeln(Color.bold('\n📦 Largest Assets'));
     buffer.writeln(Color.dim('─' * _terminalWidth));
 
-    final totalSize = result.getTotalSize();
     final largestAssets = result.getLargestAssets(10);
+    if (largestAssets.isEmpty) {
+      buffer.writeln(Color.dim('No assets found.'));
+      return;
+    }
+
+    final totalSize = result.getTotalSize();
 
     for (final asset in largestAssets) {
-      final percentage = (asset.info.size / totalSize * 100).toStringAsFixed(1);
+      final percentage = totalSize > 0
+          ? (asset.info.size / totalSize * 100).toStringAsFixed(1)
+          : '0.0';
       final sizeStr = _formatSize(asset.info.size);
 
-      // Add dimension info if available
       final dimensions = asset.imageInfo != null
           ? Color.dim(' (${asset.imageInfo!.width}x${asset.imageInfo!.height})')
           : '';
@@ -177,6 +172,48 @@ class AnalysisView {
           '${Color.yellow('$percentage%'.padLeft(7))} │ '
           '${asset.info.name}$dimensions');
     }
+  }
+
+  void _writeUnusedAssets(StringBuffer buffer, AnalysisResult result) {
+    buffer.writeln(Color.bold('\n🗑️  Unused Assets'));
+    buffer.writeln(Color.dim('─' * _terminalWidth));
+
+    final unusedCount = result.unusedAssets.length;
+    final unusedSize = result.getUnusedTotalBytes();
+    final totalSize = result.getTotalSize();
+    final percentage = totalSize > 0
+        ? (unusedSize / totalSize * 100).toStringAsFixed(1)
+        : '0.0';
+
+    buffer.writeln(
+        'Found ${Color.yellow(unusedCount.toString())} potentially unused assets');
+    buffer.writeln(
+        'Total size: ${Color.yellow(_formatSize(unusedSize))} ($percentage% of all assets)');
+    buffer.writeln('');
+
+    final sortedUnused = List.from(result.unusedAssets)
+      ..sort((a, b) => b.info.size.compareTo(a.info.size));
+
+    final displayCount = sortedUnused.length > 15 ? 15 : sortedUnused.length;
+    for (var i = 0; i < displayCount; i++) {
+      final asset = sortedUnused[i];
+      final sizeStr = _formatSize(asset.info.size);
+      final relativePath = _getRelativePath(asset.info.path, result.projectRoot);
+      buffer.writeln('${Color.dim(sizeStr.padRight(10))} ${Color.red(relativePath)}');
+    }
+
+    if (sortedUnused.length > 15) {
+      buffer.writeln(
+          Color.dim('  ... and ${sortedUnused.length - 15} more unused assets'));
+    }
+
+    buffer.writeln('');
+    buffer.writeln(Color.dim(
+        'Note: Review these files before deletion. Some may be referenced dynamically.'));
+  }
+
+  String _getRelativePath(String absolutePath, String projectRoot) {
+    return p.relative(absolutePath, from: projectRoot);
   }
 
   void _writeIssues(StringBuffer buffer, AnalysisResult result) {
@@ -193,7 +230,6 @@ class AnalysisView {
         buffer.writeln(colorize('$icon ${asset.info.name}'));
         buffer.writeln(colorize('   Current: ${_formatSize(asset.info.size)}'));
 
-        // Add specific recommendations based on issue type
         final recommendation = _getRecommendation(asset, issue);
         buffer.writeln(colorize('   $recommendation'));
         buffer.writeln('');
@@ -257,13 +293,18 @@ class AnalysisView {
 
   Map<String, DirStats> _getDirectoryStats(AnalysisResult result) {
     final stats = <String, DirStats>{};
+    final root = p.normalize(p.absolute(result.projectRoot));
 
     for (final asset in result.assets) {
-      var dir = asset.info.directory;
+      final assetDirAbs = p.normalize(p.absolute(asset.info.directory));
+      var dir = p.relative(assetDirAbs, from: root);
+
+      if (dir == '.' || dir.startsWith('..')) continue;
+
       while (dir.isNotEmpty && dir != '.') {
         stats.putIfAbsent(dir, () => DirStats()).addAsset(asset);
         final parent = p.dirname(dir);
-        if (parent == dir) break;
+        if (parent == dir || parent == '.') break;
         dir = parent;
       }
     }
@@ -375,10 +416,9 @@ int _getEstimatedSavings(AssetDetail asset) {
 }
 
 String _getFormatConversionSteps(AssetDetail asset) {
-  if (asset.info.type == 'png' && asset.imageInfo?.hasAlpha == false) {
-    return 'Convert to JPEG using: cwebp -q 85 ${asset.info.name}';
-  }
-  return 'Convert to WebP using: cwebp -q 85 ${asset.info.name}';
+  final ext = p.extension(asset.info.name);
+  final webpName = asset.info.name.replaceAll(ext, '.webp');
+  return 'Convert to WebP: cwebp -q 85 ${asset.info.name} -o $webpName';
 }
 
 Function _getTypeColor(String type) {

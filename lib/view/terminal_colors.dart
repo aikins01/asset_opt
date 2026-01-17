@@ -7,7 +7,6 @@ class Color {
   static String _wrap(String text, String code) =>
       enabled ? '$code$text\x1B[0m' : text;
 
-  // Basic colors
   static String red(String text) => _wrap(text, '\x1B[31m');
   static String green(String text) => _wrap(text, '\x1B[32m');
   static String yellow(String text) => _wrap(text, '\x1B[33m');
@@ -16,13 +15,11 @@ class Color {
   static String cyan(String text) => _wrap(text, '\x1B[36m');
   static String white(String text) => _wrap(text, '\x1B[37m');
 
-  // Text styles
   static String bold(String text) => _wrap(text, '\x1B[1m');
   static String dim(String text) => _wrap(text, '\x1B[2m');
   static String italic(String text) => _wrap(text, '\x1B[3m');
   static String underline(String text) => _wrap(text, '\x1B[4m');
 
-  // Background colors
   static String bgRed(String text) => _wrap(text, '\x1B[41m');
   static String bgGreen(String text) => _wrap(text, '\x1B[42m');
   static String bgYellow(String text) => _wrap(text, '\x1B[43m');
@@ -31,7 +28,6 @@ class Color {
   static String bgCyan(String text) => _wrap(text, '\x1B[46m');
   static String bgWhite(String text) => _wrap(text, '\x1B[47m');
 
-  // Bright colors
   static String brightRed(String text) => _wrap(text, '\x1B[91m');
   static String brightGreen(String text) => _wrap(text, '\x1B[92m');
   static String brightYellow(String text) => _wrap(text, '\x1B[93m');
@@ -40,7 +36,6 @@ class Color {
   static String brightCyan(String text) => _wrap(text, '\x1B[96m');
   static String brightWhite(String text) => _wrap(text, '\x1B[97m');
 
-  // Gradient effect (for progress bars)
   static String gradient(String text) {
     if (!enabled) return text;
 

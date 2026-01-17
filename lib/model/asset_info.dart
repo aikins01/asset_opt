@@ -1,14 +1,27 @@
 import 'package:path/path.dart' as path_util;
 import 'image_info.dart';
 
+/// Basic information about an asset file.
 class AssetInfo {
+  /// The file name (e.g., "logo.png").
   final String name;
+
+  /// The absolute file path.
   final String path;
+
+  /// File size in bytes.
   final int size;
+
+  /// File type/extension without dot (e.g., "png", "jpg").
   final String type;
+
+  /// When the file was last modified.
   final DateTime lastModified;
+
+  /// Image-specific metadata, if available.
   final ImageInfo? imageInfo;
 
+  /// Creates an asset info instance.
   AssetInfo({
     required this.name,
     required this.path,
