@@ -67,7 +67,8 @@ class FileService {
       }
 
       try {
-        await for (final entity in directory.list(recursive: recursive)) {
+        await for (final entity
+            in directory.list(recursive: recursive, followLinks: false)) {
           if (entity is! File) continue;
 
           final extension = path.extension(entity.path).toLowerCase();
@@ -108,7 +109,6 @@ class FileService {
 
   Future<void> restoreBackup(String originalPath) async {
     final backupFile = File('$originalPath.backup');
-    final originalFile = File(originalPath);
 
     try {
       if (await backupFile.exists()) {

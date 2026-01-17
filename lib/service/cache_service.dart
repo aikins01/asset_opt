@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:asset_opt/model/cache_entry.dart';
+import 'package:path/path.dart' as p;
 
 class CacheService {
   final String cachePath;
   final Map<String, CacheEntry> _cache = {};
 
   CacheService({required this.cachePath});
+
+  String _normalizeKey(String path) => p.normalize(path);
 
   Future<void> initialize() async {
     try {
@@ -16,7 +19,7 @@ class CacheService {
         final data = jsonDecode(content) as Map<String, dynamic>;
 
         data.forEach((key, value) {
-          _cache[key] = CacheEntry.fromJson(value);
+          _cache[_normalizeKey(key)] = CacheEntry.fromJson(value);
         });
       }
     } catch (e) {
@@ -27,6 +30,10 @@ class CacheService {
   Future<void> save() async {
     try {
       final file = File(cachePath);
+      final parent = file.parent;
+      if (!await parent.exists()) {
+        await parent.create(recursive: true);
+      }
       final data = _cache.map(
         (key, value) => MapEntry(key, value.toJson()),
       );
@@ -38,15 +45,16 @@ class CacheService {
   }
 
   bool shouldOptimize(String path, int size, DateTime modified) {
-    final entry = _cache[path];
+    final entry = _cache[_normalizeKey(path)];
     if (entry == null) return true;
 
     return entry.size != size || entry.modified != modified;
   }
 
   void updateEntry(String path, int size, DateTime modified) {
-    _cache[path] = CacheEntry(
-      path: path,
+    final normalizedPath = _normalizeKey(path);
+    _cache[normalizedPath] = CacheEntry(
+      path: normalizedPath,
       size: size,
       modified: modified,
       optimizedAt: DateTime.now(),

@@ -3,6 +3,8 @@ import 'package:args/args.dart';
 import 'package:asset_opt/asset_opt.dart';
 import 'package:asset_opt/view/analysis_progress_listener.dart';
 import 'package:asset_opt/view/progress_view.dart';
+import 'package:asset_opt/view/terminal_colors.dart';
+import 'package:path/path.dart' as p;
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
@@ -20,7 +22,8 @@ void main(List<String> arguments) async {
     ..addOption('report-dir',
         help: 'Directory to save reports', defaultsTo: 'asset_opt_reports')
     ..addFlag('verbose',
-        abbr: 'v', help: 'Show detailed output', defaultsTo: false);
+        abbr: 'v', help: 'Show detailed output', defaultsTo: false)
+    ..addFlag('no-color', help: 'Disable colored output', negatable: false);
 
   late final ArgResults parsedArgs;
 
@@ -35,11 +38,15 @@ void main(List<String> arguments) async {
       return;
     }
 
+    if (parsedArgs['no-color']) {
+      Color.enabled = false;
+    }
+
     // Initialize services
     final fileService = FileService();
     final imageService = ImageService();
     final cacheService = CacheService(
-      cachePath: '.asset_opt_cache',
+      cachePath: p.join('.dart_tool', 'asset_opt', 'cache.json'),
     );
     final reportService = ReportService();
 
@@ -89,7 +96,8 @@ void main(List<String> arguments) async {
     await reportCommand.execute(
       analysis,
       [], // No optimization results yet
-      '${parsedArgs['report-dir']}/analysis_${DateTime.now().millisecondsSinceEpoch}.json',
+      p.join(parsedArgs['report-dir'],
+          'analysis_${DateTime.now().millisecondsSinceEpoch}.json'),
     );
 
     // Run optimization if requested
@@ -112,7 +120,8 @@ void main(List<String> arguments) async {
       await reportCommand.execute(
         analysis,
         optimizationResults,
-        '${parsedArgs['report-dir']}/optimization_${DateTime.now().millisecondsSinceEpoch}.json',
+        p.join(parsedArgs['report-dir'],
+            'optimization_${DateTime.now().millisecondsSinceEpoch}.json'),
       );
     }
   } catch (e, stackTrace) {
@@ -132,7 +141,7 @@ class ProgressReporter implements StateListener {
 
   @override
   void onStateChanged() {
-    if (state.isOptimizing) {
+    if (state.isOptimizing && stdout.hasTerminal) {
       stdout.write('\r${_formatProgress(state.progress)}');
     }
   }
