@@ -2,7 +2,7 @@
 
 A CLI tool for analyzing and optimizing Flutter/Dart project assets. Provides detailed analysis, actionable recommendations, and automatic image optimization.
 
-![Repo Card](https://raw.githubusercontent.com/aikins01/asset_opt/main/.github/assets/asset_opt_repocard.png)
+![Repo Card](https://raw.githubusercontent.com/aikins01/asset_opt/master/.github/assets/asset_opt_repocard.png)
 
 ## Features
 
